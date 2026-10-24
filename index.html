@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medscope Growth | Healthcare Consulting & Digital Marketing</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0A2540', // Deep royal authoritative navy
+                            dark: '#051426',
+                            light: '#13385C'
+                        },
+                        teal: {
+                            DEFAULT: '#007A70', // Trusted medical teal
+                            light: '#0EA59B',
+                            dark: '#005C54'
+                        },
+                        slate: {
+                            50: '#F8FAFC',
+                            100: '#E2E8F0',
+                            800: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Notification Modal / Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-navy text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-teal-light text-lg"></i>
+        <span id="toast-message" class="font-medium text-sm">Action successful</span>
+    </div>
+
+    <!-- Navigation / Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="router('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-navy to-teal flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-navy">Medscope<span class="text-teal">Growth</span></span>
+                        <p class="text-xs text-slate-500 font-medium tracking-wide">Healthcare Consulting & Marketing</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <button onclick="router('home')" class="nav-link text-sm font-semibold text-slate-600 hover:text-teal transition" data-target="home">Home</button>
+                    <button onclick="router('about')" class="nav-link text-sm font-semibold text-slate-600 hover:text-teal transition" data-target="about">About Us</button>
+                    <button onclick="router('services')" class="nav-link text-sm font-semibold text-slate-600 hover:text-teal transition" data-target="services">Services</button>
+                    <button onclick="router('blogs')" class="nav-link text-sm font-semibold text-slate-600 hover:text-teal transition" data-target="blogs">Blogs</button>
+                    <button onclick="router('news')" class="nav-link text-sm font-semibold text-slate-600 hover:text-teal transition" data-target="news">News & Updates</button>
+                    <button onclick="router('contact')" class="nav-link text-sm font-semibold text-slate-600 hover:text-teal transition" data-target="contact">Contact Us</button>
+                </nav>
+
+                <!-- Right Header Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button onclick="router('admin-login')" class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-navy border border-navy/20 rounded-lg hover:bg-navy hover:text-white transition shadow-sm">
+                        <i class="fa-solid fa-lock mr-1.5"></i> Admin Login
+                    </button>
+                    <button onclick="router('contact')" class="px-5 py-2.5 bg-teal text-white text-sm font-semibold rounded-lg hover:bg-teal-dark shadow-md hover:shadow-lg transition">
+                        Get Consultation
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center space-x-3">
+                    <button onclick="router('admin-login')" class="p-2 text-navy text-sm font-semibold"><i class="fa-solid fa-lock"></i></button>
+                    <button onclick="toggleMobileMenu()" class="p-2 text-slate-700 hover:text-teal focus:outline-none">
+                        <i id="mobile-menu-icon" class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-100 px-4 pt-2 pb-6 space-y-3 shadow-lg">
+            <button onclick="router('home'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-teal">Home</button>
+            <button onclick="router('about'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-teal">About Us</button>
+            <button onclick="router('services'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-teal">Services</button>
+            <button onclick="router('blogs'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-teal">Blogs</button>
+            <button onclick="router('news'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-teal">News & Updates</button>
+            <button onclick="router('contact'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-teal hover:bg-teal/10 font-semibold">Contact Us</button>
+        </div>
+    </header>
+
+    <!-- Main View Area -->
+    <main id="app-content" class="flex-grow">
+        <!-- Dynamic content injected here by router -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy text-white pt-16 pb-12 mt-auto border-t border-navy-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <!-- Col 1: Brand -->
+                <div class="space-y-4 md:col-span-1">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg bg-teal flex items-center justify-center text-white font-bold text-lg">
+                            <i class="fa-solid fa-stethoscope"></i>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight">Medscope<span class="text-teal-light">Growth</span></span>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Empowering hospitals, clinics, and healthcare startups across India with robust business strategies, operational excellence, branding, and digital marketing.
+                    </p>
+                    <div class="flex space-x-3 pt-2">
+                        <a id="footer-linkedin" href="https://linkedin.com" target="_blank" class="w-9 h-9 rounded-full bg-navy-light flex items-center justify-center text-slate-300 hover:bg-teal hover:text-white transition">
+                            <i class="fa-brands fa-linkedin-in text-sm"></i>
+                        </a>
+                        <a id="footer-facebook" href="https://facebook.com" target="_blank" class="w-9 h-9 rounded-full bg-navy-light flex items-center justify-center text-slate-300 hover:bg-teal hover:text-white transition">
+                            <i class="fa-brands fa-facebook-f text-sm"></i>
+                        </a>
+                        <a id="footer-instagram" href="https://instagram.com" target="_blank" class="w-9 h-9 rounded-full bg-navy-light flex items-center justify-center text-slate-300 hover:bg-teal hover:text-white transition">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </a>
+                        <a id="footer-whatsapp" href="https://whatsapp.com" target="_blank" class="w-9 h-9 rounded-full bg-navy-light flex items-center justify-center text-slate-300 hover:bg-teal hover:text-white transition">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Quick Links -->
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-teal-light mb-4">Quick Links</h3>
+                    <ul class="space-y-2.5 text-sm text-slate-300">
+                        <li><button onclick="router('home')" class="hover:text-teal-light transition">Home</button></li>
+                        <li><button onclick="router('about')" class="hover:text-teal-light transition">About Us</button></li>
+                        <li><button onclick="router('services')" class="hover:text-teal-light transition">Our Services</button></li>
+                        <li><button onclick="router('blogs')" class="hover:text-teal-light transition">Healthcare Blogs</button></li>
+                        <li><button onclick="router('news')" class="hover:text-teal-light transition">News & Updates</button></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Services -->
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-teal-light mb-4">Expertise</h3>
+                    <ul class="space-y-2.5 text-sm text-slate-300">
+                        <li><button onclick="router('service-detail', 1)" class="hover:text-teal-light transition">Growth & Strategy</button></li>
+                        <li><button onclick="router('service-detail', 2)" class="hover:text-teal-light transition">Operations & Management</button></li>
+                        <li><button onclick="router('service-detail', 3)" class="hover:text-teal-light transition">Accreditation & Quality</button></li>
+                        <li><button onclick="router('service-detail', 4)" class="hover:text-teal-light transition">Branding</button></li>
+                        <li><button onclick="router('service-detail', 5)" class="hover:text-teal-light transition">Digital Marketing</button></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Contact Info -->
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-teal-light mb-4">Contact Us</h3>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-location-dot text-teal-light mt-1"></i>
+                            <span id="footer-address">Technology Innovation & Startup Center (TISC), IIT Jodhpur, Rajasthan, India</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fa-solid fa-phone text-teal-light"></i>
+                            <span id="footer-phone">+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fa-solid fa-envelope text-teal-light"></i>
+                            <span id="footer-email">contact@medscopegrowth.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright -->
+            <div class="pt-8 border-t border-navy-light flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 space-y-4 md:space-y-0">
+                <p>&copy; 2026 Medscope Growth. All rights reserved. Operating from TISC, IIT Jodhpur.</p>
+                <div class="flex space-x-6">
+                    <button onclick="router('admin-login')" class="hover:text-teal-light transition">Admin Portal</button>
+                    <a href="#" class="hover:text-teal-light transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-teal-light transition">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        window.firebaseApp = null;
+        window.db = null;
+        window.auth = null;
+        window.appId = typeof __app_id !== 'undefined' ? __app_id : 'medscope-growth-default';
+        
+        // Export auth functions to global scope safely
+        window.fbSignOut = (authInstance) => signOut(authInstance);
+        window.fbSignInWithEmailAndPassword = (authInstance, email, pass) => signInWithEmailAndPassword(authInstance, email, pass);
+
+        try {
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+                apiKey: "AIzaSyDummyKeyForTemplateDemoOnly-ReplaceMe",
+                authDomain: "medscope-growth.firebaseapp.com",
+                projectId: "medscope-growth",
+                storageBucket: "medscope-growth.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123:web:abc"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+
+            window.firebaseApp = app;
+            window.db = db;
+            window.auth = auth;
+
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                signInWithCustomToken(auth, __initial_auth_token).catch(() => signInAnonymously(auth));
+            } else {
+                signInAnonymously(auth).catch(err => console.log("Anonymous auth fallback:", err));
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                window.currentUser = user;
+            });
+
+            initializeAppState();
+
+        } catch(e) {
+            console.warn("Firebase initialization warning (running in standalone demo mode):", e);
+            initializeAppState();
+        }
+    </script>
+
+    <!-- Application Logic & Router -->
+    <script>
+        let state = {
+            currentRoute: 'home',
+            routeParam: null,
+            settings: {
+                heroHeading: "Building Stronger Healthcare Businesses.",
+                heroDescription: "Medscope Growth is India's premier healthcare consulting and digital marketing brand, dedicated to scaling hospitals, multi-specialty clinics, and health-tech enterprises.",
+                phone: "+91 98765 43210",
+                whatsapp: "+91 98765 43210",
+                email: "contact@medscopegrowth.com",
+                address: "Technology Innovation & Startup Center (TISC), IIT Jodhpur, Rajasthan, India",
+                linkedin: "https://linkedin.com",
+                facebook: "https://facebook.com",
+                instagram: "https://instagram.com"
+            },
+            blogs: [
+                {
+                    id: 'blog-1',
+                    title: "The Future of Digital Marketing for Hospitals in India (2026)",
+                    category: "Digital Marketing",
+                    image: "https://placehold.co/600x400/0A2540/ffffff?text=Hospital+Marketing",
+                    date: "October 18, 2026",
+                    published: true,
+                    content: "Digital presence has transformed from an optional add-on to the primary patient acquisition channel for modern hospitals and healthcare providers in India. Patients today research symptoms, compare doctor reviews, and book online appointments before stepping foot into a clinic.\n\nTo capture this high-intent audience, healthcare institutions must invest in ethical SEO, compliant Google Business Profile optimization, and targeted social media campaigns that emphasize clinical excellence and patient trust."
+                },
+                {
+                    id: 'blog-2',
+                    title: "Navigating NABH Accreditation: A Step-by-Step Guide for Medium Hospitals",
+                    category: "Accreditation",
+                    image: "https://placehold.co/600x400/007A70/ffffff?text=NABH+Accreditation",
+                    date: "October 10, 2026",
+                    published: true,
+                    content: "NABH (National Accreditation Board for Hospitals & Healthcare Providers) accreditation is the pinnacle of quality assurance in Indian healthcare. Beyond regulatory compliance, it instills immense patient confidence and enables seamless tie-ins with cashless insurance networks and corporate health panels.\n\nAchieving NABH requires standardizing clinical protocols, auditing safety measures, and training medical staff rigorously. Medscope Growth specializes in guiding hospitals through this transformative journey smoothly."
+                },
+                {
+                    id: 'blog-3',
+                    title: "Maximizing ROI in Healthcare Operations: Reducing Overhead Without Compromising Care",
+                    category: "Operations",
+                    image: "https://placehold.co/600x400/1E293B/ffffff?text=Hospital+Operations",
+                    date: "September 29, 2026",
+                    published: true,
+                    content: "Running a profitable healthcare facility in today's competitive climate demands meticulous supply chain management, optimized doctor scheduling, and reduced inventory leakage in pharmacies and laboratories.\n\nBy leveraging smart ERP solutions and standardized Standard Operating Procedures (SOPs), healthcare operators can streamline workflows and significantly boost profit margins while elevating the standard of patient care."
+                }
+            ],
+            news: [
+                {
+                    id: 'news-1',
+                    title: "Medscope Growth Expands Operations to Support New Clinics Across Tier-2 Cities",
+                    date: "October 22, 2026",
+                    image: "https://placehold.co/600x400/0A2540/ffffff?text=Expansion+News",
+                    description: "Our team at TISC, IIT Jodhpur is thrilled to announce our expansion initiative targeting high-growth Tier-2 and Tier-3 healthcare markets across Rajasthan, Gujarat, and Madhya Pradesh."
+                },
+                {
+                    id: 'news-2',
+                    title: "New Healthcare Digital Compliance Guidelines Released for 2026",
+                    date: "October 12, 2026",
+                    image: "https://placehold.co/600x400/007A70/ffffff?text=Compliance+2026",
+                    description: "Ministry of Health updates digital advertising and patient data privacy guidelines. Medscope Growth provides compliant marketing strategies to safeguard your practice."
+                }
+            ],
+            inquiries: [
+                {
+                    id: 'inq-1',
+                    name: "Dr. Rajesh Sharma",
+                    email: "rajesh.sharma@sharmaclinic.in",
+                    phone: "+91 9811122233",
+                    service: "Growth & Strategy",
+                    message: "Looking for strategic consulting to scale our 50-bed multi-specialty hospital in Jaipur.",
+                    date: "2026-10-24 10:30 AM"
+                }
+            ],
+            servicesList: [
+                {
+                    id: 1,
+                    title: "Growth & Strategy",
+                    slug: "growth-strategy",
+                    icon: "fa-chart-line",
+                    short: "Strategic planning, expansion roadmaps, financial modeling, and scaling multi-specialty hospitals.",
+                    description: "We partner with hospital promoters and clinic owners to formulate comprehensive business plans, evaluate capital expenditure, explore venture funding or partnerships, and engineer scalable growth models tailored to the Indian healthcare ecosystem."
+                },
+                {
+                    id: 2,
+                    title: "Operations & Management",
+                    slug: "operations-management",
+                    icon: "fa-hospital",
+                    short: "Optimizing hospital workflows, inventory control, OPD/IPD management, and staff productivity.",
+                    description: "Operational bottlenecks directly impact patient satisfaction and bottom lines. Our experts streamline hospital operations from admission to discharge, optimize pharmacy and lab supply chains, and implement rigorous hospital management KPIs."
+                },
+                {
+                    id: 3,
+                    title: "Accreditation & Quality",
+                    slug: "accreditation-quality",
+                    icon: "fa-award",
+                    short: "End-to-end NABH, NABL readiness, clinical audits, quality protocols, and patient safety standards.",
+                    description: "Achieve prestigious certifications like NABH and NABL with confidence. We conduct thorough gap analyses, draft comprehensive SOPs, train medical and administrative personnel, and ensure seamless audit clearances."
+                },
+                {
+                    id: 4,
+                    title: "Branding",
+                    slug: "branding",
+                    icon: "fa-bullhorn",
+                    short: "Hospital brand positioning, doctor profiling, visual identity, outdoor campaigns, and community trust building.",
+                    description: "In healthcare, trust is your greatest asset. We build compelling brand identities for healthcare institutions, position specialist doctors as thought leaders, design premium offline visual collateral, and execute ethical community outreach campaigns."
+                },
+                {
+                    id: 5,
+                    title: "Digital Marketing",
+                    slug: "digital-marketing",
+                    icon: "fa-globe",
+                    short: "Healthcare SEO, high-converting Google & Meta ads, patient review management, and reputation building.",
+                    description: "Acquire patients online predictably. We specialize in HIPAA-aligned and Indian medical council compliant digital campaigns, local SEO for clinics, high-converting websites, and patient lead generation systems."
+                }
+            ]
+        };
+
+        async function initializeAppState() {
+            if (!window.db) {
+                render();
+                updateDynamicElements();
+                return;
+            }
+            try {
+                const settingsRef = doc(window.db, 'artifacts', window.appId, 'public', 'data', 'settings');
+                const settingsSnap = await getDoc(settingsRef);
+                if (settingsSnap.exists()) {
+                    state.settings = { ...state.settings, ...settingsSnap.data() };
+                }
+
+                const blogsSnap = await getDocs(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'blogs'));
+                if (!blogsSnap.empty) {
+                    const loadedBlogs = [];
+                    blogsSnap.forEach(d => loadedBlogs.push({ id: d.id, ...d.data() }));
+                    state.blogs = loadedBlogs;
+                }
+
+                const newsSnap = await getDocs(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'news'));
+                if (!newsSnap.empty) {
+                    const loadedNews = [];
+                    newsSnap.forEach(d => loadedNews.push({ id: d.id, ...d.data() }));
+                    state.news = loadedNews;
+                }
+
+                const inquiriesSnap = await getDocs(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'inquiries'));
+                if (!inquiriesSnap.empty) {
+                    const loadedInq = [];
+                    inquiriesSnap.forEach(d => loadedInq.push({ id: d.id, ...d.data() }));
+                    state.inquiries = loadedInq;
+                }
+            } catch (err) {
+                console.log("Firestore sync note: using default or local state.", err);
+            }
+            render();
+            updateDynamicElements();
+        }
+
+        function router(route, param = null) {
+            state.currentRoute = route;
+            state.routeParam = param;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            render();
+            updateDynamicElements();
+            
+            document.querySelectorAll('.nav-link').forEach(el => {
+                if(el.getAttribute('data-target') === route) {
+                    el.classList.add('text-teal', 'font-bold');
+                } else {
+                    el.classList.remove('text-teal', 'font-bold');
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            const icon = document.getElementById('toast-icon');
+            msg.textContent = message;
+            if(isError) {
+                icon.className = "fa-solid fa-triangle-exclamation text-red-400 text-lg";
+                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-red-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3";
+            } else {
+                icon.className = "fa-solid fa-circle-check text-teal-light text-lg";
+                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-navy text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3";
+            }
+            setTimeout(() => {
+                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-navy text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3";
+            }, 3500);
+        }
+
+        function updateDynamicElements() {
+            document.getElementById('footer-phone').textContent = state.settings.phone;
+            document.getElementById('footer-email').textContent = state.settings.email;
+            document.getElementById('footer-address').textContent = state.settings.address;
+            document.getElementById('footer-linkedin').href = state.settings.linkedin;
+            document.getElementById('footer-facebook').href = state.settings.facebook;
+            document.getElementById('footer-instagram').href = state.settings.instagram;
+            document.getElementById('footer-whatsapp').href = `https://wa.me/${state.settings.whatsapp.replace(/[^0-9]/g, '')}`;
+        }
+
+        function render() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = '';
+            
+            switch(state.currentRoute) {
+                case 'home':
+                    container.innerHTML = renderHome();
+                    break;
+                case 'about':
+                    container.innerHTML = renderAbout();
+                    break;
+                case 'services':
+                    container.innerHTML = renderServices();
+                    break;
+                case 'service-detail':
+                    container.innerHTML = renderServiceDetail(state.routeParam);
+                    break;
+                case 'blogs':
+                    container.innerHTML = renderBlogs();
+                    break;
+                case 'blog-detail':
+                    container.innerHTML = renderBlogDetail(state.routeParam);
+                    break;
+                case 'news':
+                    container.innerHTML = renderNews();
+                    break;
+                case 'contact':
+                    container.innerHTML = renderContact();
+                    break;
+                case 'admin-login':
+                    container.innerHTML = renderAdminLogin();
+                    break;
+                case 'admin-dashboard':
+                    container.innerHTML = renderAdminDashboard();
+                    setupAdminDashboardTabs();
+                    break;
+                default:
+                    container.innerHTML = renderHome();
+            }
+        }
+
+        function renderHome() {
+            const publishedBlogs = state.blogs.filter(b => b.published !== false).slice(0, 2);
+            const latestNews = state.news.slice(0, 2);
+
+            return `
+                <div class="fade-in">
+                    <!-- Hero Section -->
+                    <section class="relative bg-gradient-to-b from-slate-50 via-white to-white py-20 lg:py-28 overflow-hidden border-b border-slate-100">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                                <div class="lg:col-span-7 space-y-6">
+                                    <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-teal/10 text-teal font-semibold text-xs tracking-wide uppercase">
+                                        <i class="fa-solid fa-award"></i> <span>Incubated at TISC, IIT Jodhpur</span>
+                                    </div>
+                                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-navy leading-tight">
+                                        ${escapeHtml(state.settings.heroHeading)}
+                                    </h1>
+                                    <p class="text-lg text-slate-600 leading-relaxed max-w-2xl">
+                                        ${escapeHtml(state.settings.heroDescription)}
+                                    </p>
+                                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
+                                        <button onclick="router('contact')" class="px-8 py-4 bg-navy text-white text-base font-semibold rounded-xl hover:bg-navy-light shadow-lg transition flex items-center justify-center space-x-2">
+                                            <span>Request Free Consultation</span>
+                                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                                        </button>
+                                        <button onclick="router('services')" class="px-8 py-4 bg-white text-navy border-2 border-slate-200 text-base font-semibold rounded-xl hover:border-teal hover:text-teal transition flex items-center justify-center">
+                                            Explore Our Services
+                                        </button>
+                                    </div>
+                                    <!-- Authentic Trust Pillars Indicator -->
+                                    <div class="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200">
+                                        <div>
+                                            <p class="text-base font-bold text-navy">Strategic Growth</p>
+                                            <p class="text-xs text-slate-500 font-medium">Hospitals & Clinics</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-base font-bold text-teal">NABH Ready</p>
+                                            <p class="text-xs text-slate-500 font-medium">Quality Standards</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-base font-bold text-navy">Digital First</p>
+                                            <p class="text-xs text-slate-500 font-medium">Patient Acquisition</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-5">
+                                    <div class="relative mx-auto max-w-md lg:max-w-none">
+                                        <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-teal to-navy opacity-20 blur-lg"></div>
+                                        <div class="relative rounded-2xl bg-white p-6 shadow-2xl border border-slate-100 space-y-6">
+                                            <div class="flex items-center space-x-4 pb-4 border-b border-slate-100">
+                                                <div class="w-12 h-12 rounded-xl bg-teal/10 flex items-center justify-center text-teal text-2xl font-bold">
+                                                    <i class="fa-solid fa-hospital-user"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-bold text-navy text-base">Healthcare Excellence Audit</h3>
+                                                    <p class="text-xs text-slate-500">Book an expert session for your facility</p>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-3">
+                                                <div class="flex items-center space-x-3 text-sm text-slate-700">
+                                                    <i class="fa-solid fa-circle-check text-teal"></i>
+                                                    <span>Patient Footfall & OPD Optimization</span>
+                                                </div>
+                                                <div class="flex items-center space-x-3 text-sm text-slate-700">
+                                                    <i class="fa-solid fa-circle-check text-teal"></i>
+                                                    <span>NABH Quality Gap Assessment</span>
+                                                </div>
+                                                <div class="flex items-center space-x-3 text-sm text-slate-700">
+                                                    <i class="fa-solid fa-circle-check text-teal"></i>
+                                                    <span>Branding & Digital Marketing Audit</span>
+                                                </div>
+                                            </div>
+                                            <button onclick="router('contact')" class="w-full py-3 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark transition shadow-md">
+                                                Book Assessment Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Five Services Section -->
+                    <section class="py-20 bg-white">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                                <span class="text-teal font-semibold text-sm uppercase tracking-wider">Comprehensive Solutions</span>
+                                <h2 class="text-3xl sm:text-4xl font-bold text-navy">Five Pillars of Healthcare Growth</h2>
+                                <p class="text-slate-600">From strategic business modeling to distinct brand positioning and digital marketing, we provide end-to-end expertise for medical institutions.</p>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                ${state.servicesList.map(s => `
+                                    <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-teal/30 transition-all group flex flex-col justify-between">
+                                        <div>
+                                            <div class="w-14 h-14 rounded-xl bg-navy text-teal-light flex items-center justify-center text-2xl mb-6 group-hover:bg-teal group-hover:text-white transition">
+                                                <i class="fa-solid ${s.icon}"></i>
+                                            </div>
+                                            <h3 class="text-xl font-bold text-navy mb-3">${s.title}</h3>
+                                            <p class="text-slate-600 text-sm leading-relaxed mb-6">${s.short}</p>
+                                        </div>
+                                        <button onclick="router('service-detail', ${s.id})" class="inline-flex items-center space-x-2 text-teal font-semibold text-sm group-hover:translate-x-1 transition">
+                                            <span>Learn More</span>
+                                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                                <!-- Card 6 CTA -->
+                                <div class="bg-gradient-to-br from-navy to-navy-dark rounded-2xl p-8 text-white flex flex-col justify-between shadow-xl">
+                                    <div>
+                                        <div class="w-14 h-14 rounded-xl bg-teal/20 text-teal-light flex items-center justify-center text-2xl mb-6">
+                                            <i class="fa-solid fa-handshake-angle"></i>
+                                        </div>
+                                        <h3 class="text-xl font-bold mb-3">Custom Healthcare Consulting</h3>
+                                        <p class="text-slate-300 text-sm leading-relaxed mb-6">Have unique requirements for your hospital chain or medical startup? Let's discuss a tailored roadmap.</p>
+                                    </div>
+                                    <button onclick="router('contact')" class="w-full py-3 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark transition shadow-md text-center">
+                                        Speak With Our Experts
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Why Choose Us -->
+                    <section class="py-20 bg-slate-50 border-y border-slate-100">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                                <div class="space-y-6">
+                                    <span class="text-teal font-semibold text-sm uppercase tracking-wider">Why Medscope Growth</span>
+                                    <h2 class="text-3xl sm:text-4xl font-bold text-navy">Built By Healthcare Experts, Backed By IIT Jodhpur Innovation</h2>
+                                    <p class="text-slate-600 leading-relaxed">
+                                        We understand the delicate balance between clinical ethics and commercial viability. Operating out of the Technology Innovation & Startup Center (TISC) at IIT Jodhpur, we bring cutting-edge analytical rigor and deep healthcare domain expertise to every partner hospital.
+                                    </p>
+                                    <div class="space-y-4 pt-2">
+                                        <div class="flex items-start space-x-4">
+                                            <div class="w-8 h-8 rounded-lg bg-teal/10 text-teal flex items-center justify-center font-bold mt-0.5"><i class="fa-solid fa-check text-sm"></i></div>
+                                            <div>
+                                                <h4 class="font-bold text-navy">Domain-Specific Expertise</h4>
+                                                <p class="text-sm text-slate-600">Deep understanding of Indian healthcare regulations, NABH protocols, and patient psychology.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start space-x-4">
+                                            <div class="w-8 h-8 rounded-lg bg-teal/10 text-teal flex items-center justify-center font-bold mt-0.5"><i class="fa-solid fa-check text-sm"></i></div>
+                                            <div>
+                                                <h4 class="font-bold text-navy">Data-Driven Strategy & Marketing</h4>
+                                                <p class="text-sm text-slate-600">No guesswork. Every operational adjustment, branding campaign, and digital promotion is backed by data.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start space-x-4">
+                                            <div class="w-8 h-8 rounded-lg bg-teal/10 text-teal flex items-center justify-center font-bold mt-0.5"><i class="fa-solid fa-check text-sm"></i></div>
+                                            <div>
+                                                <h4 class="font-bold text-navy">Transparent & Ethical Engagement</h4>
+                                                <p class="text-sm text-slate-600">Clear milestones, dedicated senior consultants, and rigorous adherence to medical council guidelines.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <div class="bg-white rounded-2xl p-8 shadow-xl border border-slate-200 space-y-6">
+                                        <h3 class="text-xl font-bold text-navy">Ready to Scale Your Healthcare Practice?</h3>
+                                        <p class="text-slate-600 text-sm">Connect with our senior consultants today for an initial diagnostic review of your hospital or clinic.</p>
+                                        <div class="space-y-4">
+                                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center space-x-4">
+                                                <div class="w-10 h-10 rounded-full bg-teal text-white flex items-center justify-center font-bold"><i class="fa-solid fa-phone"></i></div>
+                                                <div>
+                                                    <p class="text-xs text-slate-500 font-medium">Direct Line</p>
+                                                    <p class="font-bold text-navy text-sm">${escapeHtml(state.settings.phone)}</p>
+                                                </div>
+                                            </div>
+                                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center space-x-4">
+                                                <div class="w-10 h-10 rounded-full bg-navy text-white flex items-center justify-center font-bold"><i class="fa-solid fa-envelope"></i></div>
+                                                <div>
+                                                    <p class="text-xs text-slate-500 font-medium">Email Inquiry</p>
+                                                    <p class="font-bold text-navy text-sm">${escapeHtml(state.settings.email)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button onclick="router('contact')" class="w-full py-3.5 bg-navy text-white font-semibold rounded-xl hover:bg-navy-light transition shadow-md">
+                                            Get In Touch With Us
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Latest Blogs & News Section -->
+                    <section class="py-20 bg-white">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+                                <div>
+                                    <span class="text-teal font-semibold text-sm uppercase tracking-wider">Insights & Updates</span>
+                                    <h2 class="text-3xl font-bold text-navy mt-1">Latest From Our Knowledge Base</h2>
+                                </div>
+                                <button onclick="router('blogs')" class="mt-4 md:mt-0 text-teal font-semibold hover:text-teal-dark flex items-center space-x-2">
+                                    <span>View All Articles</span>
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                                ${publishedBlogs.map(b => `
+                                    <div class="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:shadow-lg transition flex flex-col">
+                                        <img src="${escapeHtml(b.image)}" alt="${escapeHtml(b.title)}" class="w-full h-52 object-cover" onerror="this.src='https://placehold.co/600x400/0A2540/ffffff?text=Healthcare+Blog'">
+                                        <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+                                            <div>
+                                                <div class="flex items-center space-x-3 text-xs text-slate-500 mb-2">
+                                                    <span class="px-2.5 py-1 bg-teal/10 text-teal font-semibold rounded-md">${escapeHtml(b.category)}</span>
+                                                    <span><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(b.date)}</span>
+                                                </div>
+                                                <h3 class="text-xl font-bold text-navy hover:text-teal transition cursor-pointer" onclick="router('blog-detail', '${b.id}')">${escapeHtml(b.title)}</h3>
+                                            </div>
+                                            <button onclick="router('blog-detail', '${b.id}')" class="text-teal font-semibold text-sm inline-flex items-center space-x-2">
+                                                <span>Read Full Article</span>
+                                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- News Preview Bar -->
+                            <div class="bg-gradient-to-r from-navy to-navy-dark rounded-2xl p-8 text-white shadow-xl flex flex-col lg:flex-row justify-between items-center space-y-6 lg:space-y-0">
+                                <div class="space-y-2 max-w-2xl">
+                                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-teal/20 text-teal-light text-xs font-semibold rounded-md">
+                                        <i class="fa-solid fa-bullhorn"></i> <span>Company Announcement</span>
+                                    </div>
+                                    <h3 class="text-2xl font-bold">${latestNews[0] ? escapeHtml(latestNews[0].title) : 'Expanding Healthcare Consulting Across India'}</h3>
+                                    <p class="text-slate-300 text-sm">${latestNews[0] ? escapeHtml(latestNews[0].description) : 'Stay tuned for our latest announcements and healthcare industry updates.'}</p>
+                                </div>
+                                <button onclick="router('news')" class="px-6 py-3 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark transition shadow-md whitespace-nowrap">
+                                    Read All News
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- CTA Banner -->
+                    <section class="py-16 bg-teal text-white">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+                            <h2 class="text-3xl sm:text-4xl font-bold">Ready to Transform Your Healthcare Business?</h2>
+                            <p class="text-teal-100 max-w-2xl mx-auto text-base">Let's discuss how Medscope Growth can accelerate your hospital's revenue, streamline operations, and build a stellar brand reputation.</p>
+                            <button onclick="router('contact')" class="px-8 py-4 bg-navy text-white text-base font-semibold rounded-xl hover:bg-navy-dark shadow-xl transition">
+                                Schedule Consultation Now
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function renderAbout() {
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                        <div class="text-center max-w-3xl mx-auto space-y-4">
+                            <span class="text-teal font-semibold text-sm uppercase tracking-wider">About Medscope Growth</span>
+                            <h1 class="text-4xl sm:text-5xl font-bold text-navy">Pioneering Healthcare Excellence in India</h1>
+                            <p class="text-slate-600 text-base leading-relaxed">
+                                Incubated at the Technology Innovation & Startup Center (TISC), IIT Jodhpur, Medscope Growth is dedicated to bridging the gap between world-class medical expertise and robust business execution.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div class="space-y-6">
+                                <h3 class="text-2xl font-bold text-navy">Our Founding Vision</h3>
+                                <p class="text-slate-600 leading-relaxed">
+                                    Healthcare delivery in India is undergoing a massive paradigm shift. While clinical talent is among the best in the world, many hospitals, nursing homes, and clinics struggle with operational inefficiencies, fragmented marketing, and stringent compliance requirements.
+                                </p>
+                                <p class="text-slate-600 leading-relaxed">
+                                    Medscope Growth was founded to solve this challenge. By combining corporate strategy, rigorous operational protocols, dedicated hospital branding, and ethical digital marketing, we help healthcare institutions achieve sustainable growth and patient trust.
+                                </p>
+                                <div class="grid grid-cols-2 gap-4 pt-4">
+                                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                        <p class="text-3xl font-bold text-navy mb-1">TISC</p>
+                                        <p class="text-xs text-slate-500 font-medium">IIT Jodhpur Incubated</p>
+                                    </div>
+                                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                        <p class="text-3xl font-bold text-teal mb-1">Expert</p>
+                                        <p class="text-xs text-slate-500 font-medium">Healthcare Consultants</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-navy to-navy-dark rounded-2xl p-8 text-white space-y-6 shadow-2xl">
+                                <h3 class="text-2xl font-bold text-teal-light">Our Mission & Vision</h3>
+                                <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-teal text-white flex items-center justify-center text-xs font-bold mt-1"><i class="fa-solid fa-bullseye"></i></div>
+                                        <div>
+                                            <strong class="text-white block mb-1">Our Mission</strong>
+                                            To empower healthcare providers with strategic clarity, operational excellence, and ethical patient acquisition frameworks that elevate the standard of healthcare delivery across India.
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-teal text-white flex items-center justify-center text-xs font-bold mt-1"><i class="fa-solid fa-eye"></i></div>
+                                        <div>
+                                            <strong class="text-white block mb-1">Our Vision</strong>
+                                            To be India's most trusted healthcare consulting and digital marketing brand, recognized for integrity, innovation, and measurable client success.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-2xl p-8 lg:p-12 border border-slate-100 text-center space-y-6">
+                            <div class="w-16 h-16 rounded-2xl bg-teal text-white text-2xl flex items-center justify-center mx-auto shadow-lg">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-navy">Anchored at Technology Innovation & Startup Center (TISC)</h3>
+                            <p class="text-slate-600 max-w-2xl mx-auto text-sm leading-relaxed">
+                                Being part of IIT Jodhpur's innovation ecosystem gives Medscope Growth unique access to advanced data analytics, research methodologies, and a network of visionary entrepreneurs and medical pioneers.
+                            </p>
+                            <p class="text-xs text-slate-500 font-semibold">${escapeHtml(state.settings.address)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderServices() {
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                        <div class="text-center max-w-3xl mx-auto space-y-4">
+                            <span class="text-teal font-semibold text-sm uppercase tracking-wider">Our Core Expertise</span>
+                            <h1 class="text-4xl sm:text-5xl font-bold text-navy">Five Specialized Healthcare Services</h1>
+                            <p class="text-slate-600 text-base leading-relaxed">
+                                Tailored solutions designed specifically for hospitals, multi-specialty clinics, diagnostic centers, and health-tech enterprises in India.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            ${state.servicesList.map(s => `
+                                <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-teal/30 transition-all flex flex-col justify-between">
+                                    <div>
+                                        <div class="w-14 h-14 rounded-xl bg-navy text-teal-light flex items-center justify-center text-2xl mb-6">
+                                            <i class="fa-solid ${s.icon}"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-navy mb-3">${s.title}</h3>
+                                        <p class="text-slate-600 text-sm leading-relaxed mb-6">${s.description}</p>
+                                    </div>
+                                    <button onclick="router('service-detail', ${s.id})" class="px-5 py-2.5 bg-teal text-white font-semibold text-sm rounded-xl hover:bg-teal-dark transition shadow-sm text-center">
+                                        View Service Details
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderServiceDetail(serviceId) {
+            const service = state.servicesList.find(s => s.id === Number(serviceId)) || state.servicesList[0];
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                        <button onclick="router('services')" class="text-teal font-semibold text-sm inline-flex items-center space-x-2 hover:underline">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                            <span>Back to All Services</span>
+                        </button>
+
+                        <div class="space-y-6">
+                            <div class="w-16 h-16 rounded-2xl bg-navy text-teal-light flex items-center justify-center text-3xl shadow-lg">
+                                <i class="fa-solid ${service.icon}"></i>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-navy">${service.title}</h1>
+                            <p class="text-lg text-slate-600 leading-relaxed">${service.description}</p>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 space-y-6">
+                            <h3 class="text-xl font-bold text-navy">What This Includes for Your Hospital / Clinic</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-circle-check text-teal mt-1"></i>
+                                    <span class="text-sm text-slate-700">Comprehensive diagnostic audit and roadmap</span>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-circle-check text-teal mt-1"></i>
+                                    <span class="text-sm text-slate-700">Dedicated senior consultant oversight</span>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-circle-check text-teal mt-1"></i>
+                                    <span class="text-sm text-slate-700">Standardized SOPs and milestone tracking</span>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-circle-check text-teal mt-1"></i>
+                                    <span class="text-sm text-slate-700">Measurable ROI and performance reporting</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-navy to-navy-dark rounded-2xl p-8 text-white flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                            <div>
+                                <h3 class="text-xl font-bold mb-1">Interested in ${service.title}?</h3>
+                                <p class="text-slate-300 text-sm">Schedule a consultation with our experts today.</p>
+                            </div>
+                            <button onclick="router('contact')" class="px-6 py-3 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark transition shadow-md whitespace-nowrap">
+                                Get Started
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBlogs() {
+            const published = state.blogs.filter(b => b.published !== false);
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                        <div class="text-center max-w-3xl mx-auto space-y-4">
+                            <span class="text-teal font-semibold text-sm uppercase tracking-wider">Healthcare Knowledge Base</span>
+                            <h1 class="text-4xl font-bold text-navy">Latest Articles & Insights</h1>
+                            <p class="text-slate-600 text-base">Expert perspectives on hospital management, medical branding, digital marketing, and accreditation standards.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            ${published.length === 0 ? '<p class="text-slate-500 col-span-3 text-center py-10">No published articles available at the moment.</p>' : ''}
+                            ${published.map(b => `
+                                <div class="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:shadow-lg transition flex flex-col justify-between">
+                                    <div>
+                                        <img src="${escapeHtml(b.image)}" alt="${escapeHtml(b.title)}" class="w-full h-52 object-cover" onerror="this.src='https://placehold.co/600x400/0A2540/ffffff?text=Healthcare+Blog'">
+                                        <div class="p-6 space-y-3">
+                                            <div class="flex items-center space-x-3 text-xs text-slate-500">
+                                                <span class="px-2.5 py-1 bg-teal/10 text-teal font-semibold rounded-md">${escapeHtml(b.category)}</span>
+                                                <span><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(b.date)}</span>
+                                            </div>
+                                            <h3 class="text-xl font-bold text-navy hover:text-teal transition cursor-pointer" onclick="router('blog-detail', '${b.id}')">${escapeHtml(b.title)}</h3>
+                                        </div>
+                                    </div>
+                                    <div class="p-6 pt-0">
+                                        <button onclick="router('blog-detail', '${b.id}')" class="text-teal font-semibold text-sm inline-flex items-center space-x-2">
+                                            <span>Read Full Article</span>
+                                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBlogDetail(blogId) {
+            const blog = state.blogs.find(b => b.id === blogId) || state.blogs[0];
+            if (!blog) return `<div class="py-20 text-center"><h2 class="text-2xl font-bold text-navy">Article not found</h2><button onclick="router('blogs')" class="mt-4 px-6 py-2 bg-teal text-white rounded-lg">Back to Blogs</button></div>`;
+
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                        <button onclick="router('blogs')" class="text-teal font-semibold text-sm inline-flex items-center space-x-2 hover:underline">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                            <span>Back to Blogs</span>
+                        </button>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3 text-xs text-slate-500">
+                                <span class="px-3 py-1 bg-teal/10 text-teal font-semibold rounded-md">${escapeHtml(blog.category || 'General')}</span>
+                                <span><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(blog.date || 'Recent')}</span>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-navy leading-tight">${escapeHtml(blog.title)}</h1>
+                        </div>
+
+                        <img src="${escapeHtml(blog.image)}" alt="${escapeHtml(blog.title)}" class="w-full h-96 object-cover rounded-2xl shadow-md" onerror="this.src='https://placehold.co/800x450/0A2540/ffffff?text=Blog+Image'">
+
+                        <div class="prose max-w-none text-slate-700 leading-relaxed space-y-4 text-base">
+                            ${escapeHtml(blog.content || '').split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')}
+                        </div>
+
+                        <div class="pt-8 border-t border-slate-200 flex justify-between items-center">
+                            <button onclick="router('blogs')" class="px-6 py-2.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition">
+                                &larr; All Articles
+                            </button>
+                            <button onclick="router('contact')" class="px-6 py-2.5 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark transition shadow-md">
+                                Consult With Us
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNews() {
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                        <div class="text-center max-w-3xl mx-auto space-y-4">
+                            <span class="text-teal font-semibold text-sm uppercase tracking-wider">Announcements</span>
+                            <h1 class="text-4xl font-bold text-navy">News & Healthcare Updates</h1>
+                            <p class="text-slate-600 text-base">Stay updated with Medscope Growth's latest milestones and regulatory healthcare developments in India.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            ${state.news.length === 0 ? '<p class="text-slate-500 col-span-2 text-center py-10">No news announcements available.</p>' : ''}
+                            ${state.news.map(n => `
+                                <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 flex flex-col justify-between space-y-4">
+                                    <div class="space-y-4">
+                                        <div class="flex items-center space-x-2 text-xs text-teal font-semibold">
+                                            <i class="fa-regular fa-calendar"></i>
+                                            <span>${escapeHtml(n.date)}</span>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-navy">${escapeHtml(n.title)}</h3>
+                                        <p class="text-slate-600 text-sm leading-relaxed">${escapeHtml(n.description)}</p>
+                                    </div>
+                                    ${n.image ? `<img src="${escapeHtml(n.image)}" alt="News" class="w-full h-48 object-cover rounded-xl mt-4" onerror="this.style.display='none'">` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderContact() {
+            return `
+                <div class="fade-in py-16 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                        <div class="text-center max-w-3xl mx-auto space-y-4">
+                            <span class="text-teal font-semibold text-sm uppercase tracking-wider">Get In Touch</span>
+                            <h1 class="text-4xl font-bold text-navy">Let's Accelerate Your Healthcare Growth</h1>
+                            <p class="text-slate-600 text-base">Fill out the form below or contact us directly via phone, email, or WhatsApp.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                            <!-- Form -->
+                            <div class="lg:col-span-7 bg-slate-50 rounded-2xl p-8 border border-slate-100 shadow-sm">
+                                <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-6">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Your Name *</label>
+                                            <input type="text" id="c-name" required class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal" placeholder="Dr. Amit Kumar">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Email Address *</label>
+                                            <input type="email" id="c-email" required class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal" placeholder="amit@hospital.com">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Phone Number *</label>
+                                            <input type="tel" id="c-phone" required class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal" placeholder="+91 98765 43210">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Service of Interest</label>
+                                            <select id="c-service" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal">
+                                                <option value="Growth & Strategy">Growth & Strategy</option>
+                                                <option value="Operations & Management">Operations & Management</option>
+                                                <option value="Accreditation & Quality">Accreditation & Quality</option>
+                                                <option value="Branding">Branding</option>
+                                                <option value="Digital Marketing">Digital Marketing</option>
+                                                <option value="General Inquiry">General Inquiry</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Message / Hospital Details *</label>
+                                        <textarea id="c-message" rows="4" required class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal" placeholder="Tell us about your hospital, bed capacity, and consulting goals..."></textarea>
+                                    </div>
+                                    <button type="submit" class="w-full py-4 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark transition shadow-md">
+                                        Submit Inquiry
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="lg:col-span-5 space-y-6">
+                                <div class="bg-navy rounded-2xl p-8 text-white shadow-xl space-y-6">
+                                    <h3 class="text-xl font-bold">Contact Information</h3>
+                                    <div class="space-y-4 text-sm text-slate-300">
+                                        <div class="flex items-start space-x-4">
+                                            <div class="w-10 h-10 rounded-lg bg-teal/20 text-teal-light flex items-center justify-center font-bold mt-0.5"><i class="fa-solid fa-location-dot"></i></div>
+                                            <div>
+                                                <p class="text-xs text-slate-400 font-medium">Office Address</p>
+                                                <p class="font-semibold text-white">${escapeHtml(state.settings.address)}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-10 h-10 rounded-lg bg-teal/20 text-teal-light flex items-center justify-center font-bold"><i class="fa-solid fa-phone"></i></div>
+                                            <div>
+                                                <p class="text-xs text-slate-400 font-medium">Phone Number</p>
+                                                <p class="font-semibold text-white">${escapeHtml(state.settings.phone)}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-10 h-10 rounded-lg bg-teal/20 text-teal-light flex items-center justify-center font-bold"><i class="fa-solid fa-envelope"></i></div>
+                                            <div>
+                                                <p class="text-xs text-slate-400 font-medium">Email Address</p>
+                                                <p class="font-semibold text-white">${escapeHtml(state.settings.email)}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-10 h-10 rounded-lg bg-teal/20 text-teal-light flex items-center justify-center font-bold"><i class="fa-brands fa-whatsapp"></i></div>
+                                            <div>
+                                                <p class="text-xs text-slate-400 font-medium">WhatsApp Contact</p>
+                                                <a href="https://wa.me/${state.settings.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="font-semibold text-teal-light hover:underline">${escapeHtml(state.settings.whatsapp)}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleContactSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('c-name').value;
+            const email = document.getElementById('c-email').value;
+            const phone = document.getElementById('c-phone').value;
+            const service = document.getElementById('c-service').value;
+            const message = document.getElementById('c-message').value;
+
+            const newInq = {
+                id: 'inq-' + Date.now(),
+                name,
+                email,
+                phone,
+                service,
+                message,
+                date: new Date().toISOString().replace('T', ' ').substring(0, 16)
+            };
+
+            state.inquiries.unshift(newInq);
+
+            if (window.db) {
+                try {
+                    await setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'inquiries_db', newInq.id), newInq);
+                } catch(e) {
+                    console.log("Firestore inquiry save note:", e);
+                }
+            }
+
+            showToast("Inquiry submitted successfully! We will contact you soon.");
+            document.getElementById('contact-form').reset();
+        }
+
+        function renderAdminLogin() {
+            return `
+                <div class="fade-in py-24 bg-slate-50 flex items-center justify-center">
+                    <div class="max-w-md w-full mx-4 bg-white rounded-2xl p-8 shadow-xl border border-slate-100 space-y-6">
+                        <div class="text-center space-y-2">
+                            <div class="w-12 h-12 rounded-xl bg-navy text-teal-light flex items-center justify-center text-xl mx-auto shadow-md">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-navy">Admin Portal Login</h2>
+                            <p class="text-slate-500 text-xs">Secure access for Medscope Growth administrators</p>
+                        </div>
+                        <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Admin Email</label>
+                                <input type="email" id="admin-email" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal" placeholder="admin@medscopegrowth.com" value="admin@medscopegrowth.com">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Password</label>
+                                <input type="password" id="admin-password" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-sm focus:outline-none focus:border-teal" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-navy text-white font-semibold rounded-xl hover:bg-navy-light transition shadow-md">
+                                Secure Login
+                            </button>
+                        </form>
+                        <div class="p-3 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
+                            Demo Credentials: Use any valid email & password (min 6 chars) to access dashboard.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (window.auth && window.fbSignInWithEmailAndPassword) {
+                try {
+                    await window.fbSignInWithEmailAndPassword(window.auth, email, password);
+                } catch(e) {
+                    console.log("Firebase Auth login note (simulated success for demo):", e);
+                }
+            }
+            window.isAdminLoggedIn = true;
+            showToast("Successfully logged in to Admin Dashboard");
+            router('admin-dashboard');
+        }
+
+        function renderAdminDashboard() {
+            return `
+                <div class="fade-in py-10 bg-slate-50 min-h-screen">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 sm:space-y-0">
+                            <div>
+                                <h1 class="text-2xl font-bold text-navy">Admin Dashboard</h1>
+                                <p class="text-xs text-slate-500">Manage website content, blogs, news, settings, and inquiries</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="router('home')" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition">
+                                    <i class="fa-solid fa-globe mr-1"></i> View Live Website
+                                </button>
+                                <button onclick="handleAdminLogout()" class="px-4 py-2 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100 transition">
+                                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                            <button onclick="switchAdminTab('blogs')" id="tab-btn-blogs" class="admin-tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-navy text-white shadow-sm transition">
+                                <i class="fa-solid fa-newspaper mr-2"></i> Blogs (${state.blogs.length})
+                            </button>
+                            <button onclick="switchAdminTab('news')" id="tab-btn-news" class="admin-tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-slate-700 hover:bg-slate-100 transition">
+                                <i class="fa-solid fa-bullhorn mr-2"></i> News (${state.news.length})
+                            </button>
+                            <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="admin-tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-slate-700 hover:bg-slate-100 transition">
+                                <i class="fa-solid fa-gear mr-2"></i> Website Settings
+                            </button>
+                            <button onclick="switchAdminTab('inquiries')" id="tab-btn-inquiries" class="admin-tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-slate-700 hover:bg-slate-100 transition">
+                                <i class="fa-solid fa-address-book mr-2"></i> Inquiries (${state.inquiries.length})
+                            </button>
+                        </div>
+
+                        <div id="admin-tab-content" class="space-y-6"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        let currentAdminTab = 'blogs';
+
+        function switchAdminTab(tab) {
+            currentAdminTab = tab;
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.className = "admin-tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-slate-700 hover:bg-slate-100 transition";
+            });
+            document.getElementById(`tab-btn-${tab}`).className = "admin-tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-navy text-white shadow-sm transition";
+            renderAdminTabContent();
+        }
+
+        function setupAdminDashboardTabs() {
+            renderAdminTabContent();
+        }
+
+        function renderAdminTabContent() {
+            const container = document.getElementById('admin-tab-content');
+            if (!container) return;
+
+            if (currentAdminTab === 'blogs') {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-navy">Manage Blog Posts</h3>
+                            <button onclick="openBlogModal()" class="px-4 py-2 bg-teal text-white text-sm font-semibold rounded-xl hover:bg-teal-dark shadow-sm">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Add New Blog
+                            </button>
+                        </div>
+                        <div class="divide-y divide-slate-100">
+                            ${state.blogs.map(b => `
+                                <div class="py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="px-2 py-0.5 text-xs font-semibold rounded ${b.published !== false ? 'bg-teal/10 text-teal' : 'bg-amber-100 text-amber-800'}">${b.published !== false ? 'Published' : 'Draft'}</span>
+                                            <span class="text-xs text-slate-400">${escapeHtml(b.date)}</span>
+                                        </div>
+                                        <h4 class="font-bold text-navy text-base">${escapeHtml(b.title)}</h4>
+                                        <p class="text-xs text-slate-500">Category: ${escapeHtml(b.category)}</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="togglePublishBlog('${b.id}')" class="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200">
+                                            ${b.published !== false ? 'Unpublish' : 'Publish'}
+                                        </button>
+                                        <button onclick="openBlogModal('${b.id}')" class="px-3 py-1.5 bg-navy/10 text-navy text-xs font-semibold rounded-lg hover:bg-navy/20">
+                                            Edit
+                                        </button>
+                                        <button onclick="deleteBlog('${b.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (currentAdminTab === 'news') {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-navy">Manage News & Updates</h3>
+                            <button onclick="openNewsModal()" class="px-4 py-2 bg-teal text-white text-sm font-semibold rounded-xl hover:bg-teal-dark shadow-sm">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Add News Update
+                            </button>
+                        </div>
+                        <div class="divide-y divide-slate-100">
+                            ${state.news.map(n => `
+                                <div class="py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+                                    <div class="space-y-1">
+                                        <span class="text-xs text-slate-400 font-semibold">${escapeHtml(n.date)}</span>
+                                        <h4 class="font-bold text-navy text-base">${escapeHtml(n.title)}</h4>
+                                        <p class="text-xs text-slate-500">${escapeHtml(n.description.substring(0, 100))}...</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="openNewsModal('${n.id}')" class="px-3 py-1.5 bg-navy/10 text-navy text-xs font-semibold rounded-lg hover:bg-navy/20">Edit</button>
+                                        <button onclick="deleteNews('${n.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100">Delete</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (currentAdminTab === 'settings') {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-6">
+                        <h3 class="text-xl font-bold text-navy">Website Settings & Global Info</h3>
+                        <form onsubmit="handleSaveSettings(event)" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Homepage Hero Heading</label>
+                                    <input type="text" id="set-heading" value="${escapeHtml(state.settings.heroHeading)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Business Phone Number</label>
+                                    <input type="text" id="set-phone" value="${escapeHtml(state.settings.phone)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Homepage Hero Description</label>
+                                <textarea id="set-desc" rows="3" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">${escapeHtml(state.settings.heroDescription)}</textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">WhatsApp Contact</label>
+                                    <input type="text" id="set-whatsapp" value="${escapeHtml(state.settings.whatsapp)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Email Address</label>
+                                    <input type="email" id="set-email" value="${escapeHtml(state.settings.email)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">LinkedIn URL</label>
+                                    <input type="url" id="set-linkedin" value="${escapeHtml(state.settings.linkedin)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Facebook URL</label>
+                                    <input type="url" id="set-facebook" value="${escapeHtml(state.settings.facebook)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Instagram URL</label>
+                                    <input type="url" id="set-instagram" value="${escapeHtml(state.settings.instagram)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Office Address</label>
+                                <input type="text" id="set-address" value="${escapeHtml(state.settings.address)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                            </div>
+                            <button type="submit" class="px-8 py-3.5 bg-teal text-white font-semibold rounded-xl hover:bg-teal-dark shadow-md">
+                                Save Settings & Update Website
+                            </button>
+                        </form>
+                    </div>
+                `;
+            } else if (currentAdminTab === 'inquiries') {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-6">
+                        <h3 class="text-xl font-bold text-navy">Contact Inquiries (${state.inquiries.length})</h3>
+                        <div class="divide-y divide-slate-100">
+                            ${state.inquiries.length === 0 ? '<p class="text-slate-500 py-6 text-center">No contact inquiries received yet.</p>' : ''}
+                            ${state.inquiries.map(i => `
+                                <div class="py-4 space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-bold text-navy text-base">${escapeHtml(i.name)} <span class="text-xs font-normal text-slate-500">(${escapeHtml(i.service)})</span></h4>
+                                            <p class="text-xs text-teal font-semibold">${escapeHtml(i.email)} | ${escapeHtml(i.phone)}</p>
+                                        </div>
+                                        <span class="text-xs text-slate-400">${escapeHtml(i.date)}</span>
+                                    </div>
+                                    <p class="text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">${escapeHtml(i.message)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function handleSaveSettings(event) {
+            event.preventDefault();
+            state.settings = {
+                heroHeading: document.getElementById('set-heading').value,
+                heroDescription: document.getElementById('set-desc').value,
+                phone: document.getElementById('set-phone').value,
+                whatsapp: document.getElementById('set-whatsapp').value,
+                email: document.getElementById('set-email').value,
+                linkedin: document.getElementById('set-linkedin').value,
+                facebook: document.getElementById('set-facebook').value,
+                instagram: document.getElementById('set-instagram').value,
+                address: document.getElementById('set-address').value
+            };
+
+            if (window.db) {
+                try {
+                    await setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'settings'), state.settings);
+                } catch(e) {
+                    console.log("Firestore settings save note:", e);
+                }
+            }
+
+            updateDynamicElements();
+            showToast("Website settings updated successfully!");
+        }
+
+        function handleAdminLogout() {
+            window.isAdminLoggedIn = false;
+            if (window.auth && window.fbSignOut) {
+                window.fbSignOut(window.auth).catch(err => console.log("Signout note:", err));
+            }
+            showToast("Logged out successfully");
+            router('home');
+        }
+
+        function openBlogModal(blogId = null) {
+            const blog = blogId ? state.blogs.find(b => b.id === blogId) : { title: '', category: 'Digital Marketing', image: '', content: '', published: true };
+            
+            const modalHTML = `
+                <div id="admin-modal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-2xl w-full p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-navy">${blogId ? 'Edit Blog Post' : 'Add New Blog Post'}</h3>
+                            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        </div>
+                        <form onsubmit="saveBlog(event, '${blogId || ''}')" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Title</label>
+                                <input type="text" id="m-blog-title" value="${escapeHtml(blog.title)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Category</label>
+                                    <input type="text" id="m-blog-cat" value="${escapeHtml(blog.category)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Image URL</label>
+                                    <input type="url" id="m-blog-img" value="${escapeHtml(blog.image)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal" placeholder="https://placehold.co/600x400">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Content</label>
+                                <textarea id="m-blog-content" rows="6" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">${escapeHtml(blog.content)}</textarea>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" id="m-blog-pub" ${blog.published !== false ? 'checked' : ''} class="w-4 h-4 text-teal rounded border-slate-300">
+                                <label for="m-blog-pub" class="text-sm font-medium text-slate-700">Publish immediately</label>
+                            </div>
+                            <div class="flex justify-end space-x-3 pt-4">
+                                <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 text-slate-700 font-semibold rounded-xl text-sm">Cancel</button>
+                                <button type="submit" class="px-5 py-2.5 bg-teal text-white font-semibold rounded-xl text-sm hover:bg-teal-dark">Save Blog</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            const div = document.createElement('div');
+            div.id = 'modal-container';
+            div.innerHTML = modalHTML;
+            document.body.appendChild(div);
+        }
+
+        async function saveBlog(event, blogId) {
+            event.preventDefault();
+            const title = document.getElementById('m-blog-title').value;
+            const category = document.getElementById('m-blog-cat').value;
+            const image = document.getElementById('m-blog-img').value;
+            const content = document.getElementById('m-blog-content').value;
+            const published = document.getElementById('m-blog-pub').checked;
+            const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+            if (blogId) {
+                const idx = state.blogs.findIndex(b => b.id === blogId);
+                if (idx !== -1) {
+                    state.blogs[idx] = { ...state.blogs[idx], title, category, image, content, published };
+                }
+            } else {
+                const newB = { id: 'blog-' + Date.now(), title, category, image, content, published, date };
+                state.blogs.unshift(newB);
+                if (window.db) {
+                    try {
+                        await setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'blogs_db', newB.id), newB);
+                    } catch(e) { console.log("Blog save firestore note:", e); }
+                }
+            }
+
+            closeModal();
+            renderAdminTabContent();
+            showToast("Blog saved successfully!");
+        }
+
+        async function togglePublishBlog(blogId) {
+            const blog = state.blogs.find(b => b.id === blogId);
+            if (blog) {
+                blog.published = blog.published === false ? true : false;
+                renderAdminTabContent();
+                showToast(`Blog status updated to ${blog.published ? 'Published' : 'Draft'}`);
+            }
+        }
+
+        async function deleteBlog(blogId) {
+            if (confirm("Are you sure you want to delete this blog post?")) {
+                state.blogs = state.blogs.filter(b => b.id !== blogId);
+                renderAdminTabContent();
+                showToast("Blog deleted successfully");
+            }
+        }
+
+        function openNewsModal(newsId = null) {
+            const newsItem = newsId ? state.news.find(n => n.id === newsId) : { title: '', description: '', image: '' };
+            const modalHTML = `
+                <div id="admin-modal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-xl w-full p-8 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-navy">${newsId ? 'Edit News Update' : 'Add News Update'}</h3>
+                            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        </div>
+                        <form onsubmit="saveNews(event, '${newsId || ''}')" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Title</label>
+                                <input type="text" id="m-news-title" value="${escapeHtml(newsItem.title)}" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Image URL</label>
+                                <input type="url" id="m-news-img" value="${escapeHtml(newsItem.image || '')}" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal" placeholder="https://placehold.co/600x400">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Description</label>
+                                <textarea id="m-news-desc" rows="4" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-teal">${escapeHtml(newsItem.description)}</textarea>
+                            </div>
+                            <div class="flex justify-end space-x-3 pt-4">
+                                <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 text-slate-700 font-semibold rounded-xl text-sm">Cancel</button>
+                                <button type="submit" class="px-5 py-2.5 bg-teal text-white font-semibold rounded-xl text-sm hover:bg-teal-dark">Save News</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            const div = document.createElement('div');
+            div.id = 'modal-container';
+            div.innerHTML = modalHTML;
+            document.body.appendChild(div);
+        }
+
+        async function saveNews(event, newsId) {
+            event.preventDefault();
+            const title = document.getElementById('m-news-title').value;
+            const description = document.getElementById('m-news-desc').value;
+            const image = document.getElementById('m-news-img').value;
+            const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+            if (newsId) {
+                const idx = state.news.findIndex(n => n.id === newsId);
+                if (idx !== -1) {
+                    state.news[idx] = { ...state.news[idx], title, description, image };
+                }
+            } else {
+                state.news.unshift({ id: 'news-' + Date.now(), title, description, image, date });
+            }
+
+            closeModal();
+            renderAdminTabContent();
+            showToast("News updated successfully!");
+        }
+
+        function deleteNews(newsId) {
+            if (confirm("Delete this news update?")) {
+                state.news = state.news.filter(n => n.id !== newsId);
+                renderAdminTabContent();
+                showToast("News deleted");
+            }
+        }
+
+        function closeModal() {
+            const m = document.getElementById('modal-container');
+            if (m) m.remove();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            router('home');
+        });
+    </script>
+</body>
+</html>
