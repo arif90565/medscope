@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medscope Growth — Healthcare Consulting & Hospital Management</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0F172A',
+                            900: '#0B0F19',
+                        },
+                        teal: {
+                            600: '#0D9488',
+                            700: '#0F766E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-gray-800 font-sans antialiased selection:bg-teal-600 selection:text-white flex flex-col min-h-screen">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-navy-900 text-white text-xs py-1 px-4 text-center flex justify-between items-center z-50">
+        <span class="truncate">Medscope Growth | Strategic Healthcare Consulting & Business Management</span>
+        <div id="db-status-badge" class="flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded bg-teal-600/30 text-teal-300 border border-teal-500/30">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            <span id="db-status-text">Cloud DB Active</span>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="/" onclick="route(event)" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xl shadow-md group-hover:bg-teal-700 transition-colors">
+                    <i data-lucide="stethoscope" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight text-navy-900 block leading-none">Medscope</span>
+                    <span class="text-[10px] font-bold tracking-widest text-teal-600 uppercase block mt-1">Growth</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center gap-7">
+                <a href="/" onclick="route(event)" class="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">Home</a>
+                <a href="/about" onclick="route(event)" class="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">About Us</a>
+                <a href="/services" onclick="route(event)" class="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">Services</a>
+                <a href="/blogs" onclick="route(event)" class="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">Blogs</a>
+                <a href="/news" onclick="route(event)" class="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">News & Updates</a>
+                <a href="/contact" onclick="route(event)" class="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">Contact Us</a>
+            </nav>
+
+            <div class="hidden md:flex items-center gap-4">
+                <div class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-xs font-semibold">
+                    <i data-lucide="database" class="w-3.5 h-3.5"></i> Cloud DB Active
+                </div>
+                <a href="/contact" onclick="route(event)" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl shadow-sm transition-all hover:shadow flex items-center gap-2">
+                    Consult Experts <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+                <a href="/admin/login" onclick="route(event)" class="text-gray-400 hover:text-navy-900 p-2 rounded-xl border border-gray-200 transition-colors" title="Admin Portal">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-gray-700 hover:text-teal-600 focus:outline-none">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-gray-100 px-4 pt-2 pb-6 space-y-3 shadow-lg">
+            <a href="/" onclick="route(event); toggleMobileMenu()" class="block py-2 text-base font-medium text-gray-700">Home</a>
+            <a href="/about" onclick="route(event); toggleMobileMenu()" class="block py-2 text-base font-medium text-gray-700">About Us</a>
+            <a href="/services" onclick="route(event); toggleMobileMenu()" class="block py-2 text-base font-medium text-gray-700">Services</a>
+            <a href="/blogs" onclick="route(event); toggleMobileMenu()" class="block py-2 text-base font-medium text-gray-700">Blogs</a>
+            <a href="/news" onclick="route(event); toggleMobileMenu()" class="block py-2 text-base font-medium text-gray-700">News & Updates</a>
+            <a href="/contact" onclick="route(event); toggleMobileMenu()" class="block py-2 text-base font-medium text-gray-700">Contact Us</a>
+            <div class="pt-4 flex items-center justify-between border-t border-gray-100">
+                <a href="/contact" onclick="route(event); toggleMobileMenu()" class="w-full text-center bg-teal-600 text-white py-3 rounded-xl font-medium">Consult Experts</a>
+                <a href="/admin/login" onclick="route(event); toggleMobileMenu()" class="p-3 text-gray-600 hover:text-navy-900 ml-2 border border-gray-200 rounded-xl"><i data-lucide="lock" class="w-5 h-5"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="app" class="flex-grow"></main>
+
+    <!-- Professional Footer -->
+    <footer class="bg-navy-900 text-gray-300 pt-16 pb-12 border-t border-navy-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xl shadow">
+                            <i data-lucide="stethoscope" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-xl font-extrabold text-white block leading-none">Medscope</span>
+                            <span class="text-[10px] font-bold tracking-widest text-teal-400 uppercase block mt-1">Growth</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        Strategic consulting, operational excellence, accreditation support and digital growth solutions for hospitals, clinics and healthcare professionals across India.
+                    </p>
+                    <div class="pt-2">
+                        <span class="text-xs text-gray-400 block mb-1">Supabase Connection Settings:</span>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="footer-sb-url" placeholder="Supabase Project URL" class="bg-navy-800 border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white w-40 focus:outline-none focus:border-teal-500" />
+                            <input type="password" id="footer-sb-key" placeholder="Supabase Anon Key" class="bg-navy-800 border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white w-40 focus:outline-none focus:border-teal-500" />
+                            <button onclick="saveSupabaseCredentials()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors">Connect</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4 border-l-2 border-teal-500 pl-2">Navigation</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="/" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">Home</a></li>
+                        <li><a href="/about" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">About Us</a></li>
+                        <li><a href="/services" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">Services</a></li>
+                        <li><a href="/blogs" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">Blogs & Insights</a></li>
+                        <li><a href="/news" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">News & Updates</a></li>
+                        <li><a href="/contact" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4 border-l-2 border-teal-500 pl-2">Expertise</h4>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        <li><a href="/services" onclick="route(event)" class="hover:text-teal-400 transition-colors">Growth & Strategy</a></li>
+                        <li><a href="/services" onclick="route(event)" class="hover:text-teal-400 transition-colors">Operations & Management</a></li>
+                        <li><a href="/services" onclick="route(event)" class="hover:text-teal-400 transition-colors">Accreditation & Quality</a></li>
+                        <li><a href="/services" onclick="route(event)" class="hover:text-teal-400 transition-colors">Branding & Marketing</a></li>
+                        <li><a href="/services" onclick="route(event)" class="hover:text-teal-400 transition-colors">Digital Marketing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4 border-l-2 border-teal-500 pl-2">Legal & Admin</h4>
+                    <ul class="space-y-2.5 text-sm mb-6">
+                        <li><a href="/privacy" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="/terms" onclick="route(event)" class="text-gray-400 hover:text-teal-400 transition-colors">Terms & Conditions</a></li>
+                        <li><a href="/admin/login" onclick="route(event)" class="text-gray-400 hover:text-teal-400 flex items-center gap-1.5 transition-colors"><i data-lucide="shield" class="w-3.5 h-3.5 text-teal-400"></i> Admin Portal</a></li>
+                    </ul>
+                    <div class="space-y-2">
+                        <span class="text-xs font-semibold text-white uppercase tracking-wider block">Newsletter</span>
+                        <form onsubmit="handleFooterNewsletter(event)" class="flex gap-2">
+                            <input type="email" id="footer-newsletter-email" placeholder="Your work email" required class="bg-navy-800 border border-gray-700 rounded-lg px-3 py-2 text-xs text-white w-full focus:outline-none focus:border-teal-500" />
+                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white text-xs px-3 py-2 rounded-lg font-medium">Join</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-navy-800 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-4">
+                <p>&copy; <span id="footer-year">2026</span> Medscope Growth. All rights reserved.</p>
+                <div class="flex items-center gap-6">
+                    <a href="/privacy" onclick="route(event)" class="hover:text-teal-400">Privacy Policy</a>
+                    <a href="/terms" onclick="route(event)" class="hover:text-teal-400">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- Application Script -->
+    <script>
+        let defaultSupabaseUrl = localStorage.getItem('sb_url') || 'https://YOUR_PROJECT_ID.supabase.co';
+        let defaultSupabaseKey = localStorage.getItem('sb_key') || 'YOUR_ANON_KEY';
+        let supabase = window.supabase.createClient(defaultSupabaseUrl, defaultSupabaseKey);
+
+        window.isAdminAuthenticated = false;
+        let currentUser = null;
+
+        async function initApp() {
+            document.getElementById('footer-year').textContent = new Date().getFullYear();
+            if (localStorage.getItem('sb_url')) {
+                document.getElementById('footer-sb-url').value = localStorage.getItem('sb_url');
+                document.getElementById('footer-sb-key').value = localStorage.getItem('sb_key');
+            }
+            await verifySupabaseConnection();
+            await checkAuthSession();
+            handleRoute();
+        }
+
+        async function saveSupabaseCredentials() {
+            const url = document.getElementById('footer-sb-url').value.trim();
+            const key = document.getElementById('footer-sb-key').value.trim();
+            if (!url || !key) {
+                showNotification('Please enter both Supabase URL and Anon Key', 'error');
+                return;
+            }
+            localStorage.setItem('sb_url', url);
+            localStorage.setItem('sb_key', key);
+            supabase = window.supabase.createClient(url, key);
+            await verifySupabaseConnection();
+            await checkAuthSession();
+            showNotification('Supabase connected successfully!', 'success');
+            handleRoute();
+        }
+
+        async function verifySupabaseConnection() {
+            const badgeText = document.getElementById('db-status-text');
+            const badge = document.getElementById('db-status-badge');
+            try {
+                const { data, error } = await supabase.from('settings').select('*').limit(1);
+                if (error && error.code !== 'PGRST116') {
+                    badgeText.textContent = 'Demo Mode (DB Offline)';
+                    badge.className = 'flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                } else {
+                    badgeText.textContent = 'Cloud DB Active';
+                    badge.className = 'flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded bg-teal-600/30 text-teal-300 border border-teal-500/30';
+                }
+            } catch (err) {
+                badgeText.textContent = 'Demo Mode (DB Offline)';
+                badge.className = 'flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30';
+            }
+        }
+
+        async function checkAuthSession() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (session && session.user) {
+                    currentUser = session.user;
+                    const { data: adminData, error: adminError } = await supabase
+                        .from('admin_users')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .single();
+
+                    if (adminData && !adminError) {
+                        window.isAdminAuthenticated = true;
+                    } else {
+                        window.isAdminAuthenticated = false;
+                        await supabase.auth.signOut();
+                        currentUser = null;
+                    }
+                } else {
+                    window.isAdminAuthenticated = false;
+                    currentUser = null;
+                }
+            } catch (err) {
+                window.isAdminAuthenticated = false;
+                currentUser = null;
+            }
+        }
+
+        function route(event) {
+            event.preventDefault();
+            const href = event.currentTarget.getAttribute('href');
+            window.history.pushState({}, '', href);
+            handleRoute();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('popstate', () => handleRoute());
+
+        async function handleRoute() {
+            const path = window.location.pathname;
+            const app = document.getElementById('app');
+            await checkAuthSession();
+            document.getElementById('mobile-menu').classList.add('hidden');
+
+            if (path === '/' || path === '') {
+                app.innerHTML = renderHome();
+                loadHomeData();
+            } else if (path === '/about') {
+                app.innerHTML = renderAbout();
+            } else if (path === '/services') {
+                app.innerHTML = renderServices();
+            } else if (path === '/blogs') {
+                app.innerHTML = renderBlogsPage();
+                loadBlogsData();
+            } else if (path.startsWith('/blogs/')) {
+                const slug = path.split('/')[2];
+                app.innerHTML = renderSingleBlog(slug);
+            } else if (path === '/news') {
+                app.innerHTML = renderNewsPage();
+                loadNewsData();
+            } else if (path.startsWith('/news/')) {
+                const slug = path.split('/')[2];
+                app.innerHTML = renderSingleNews(slug);
+            } else if (path === '/contact') {
+                app.innerHTML = renderContact();
+            } else if (path === '/privacy') {
+                app.innerHTML = renderPrivacy();
+            } else if (path === '/terms') {
+                app.innerHTML = renderTerms();
+            } else if (path === '/admin/login') {
+                if (window.isAdminAuthenticated) {
+                    window.history.pushState({}, '', '/admin/dashboard');
+                    handleRoute();
+                    return;
+                }
+                app.innerHTML = renderAdminLogin();
+            } else if (path === '/admin/dashboard') {
+                if (!window.isAdminAuthenticated) {
+                    window.history.pushState({}, '', '/admin/login');
+                    handleRoute();
+                    showNotification('Please log in with authorized admin credentials.', 'error');
+                    return;
+                }
+                app.innerHTML = renderAdminDashboard();
+                loadAdminDashboard();
+            } else {
+                app.innerHTML = renderNotFound();
+            }
+            lucide.createIcons();
+        }
+
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all transform translate-y-2 opacity-0 flex items-center gap-3 ${
+                type === 'success' ? 'bg-teal-700' : 'bg-red-600'
+            }`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // --- Pages ---
+        function renderHome() {
+            return `
+                <section class="relative bg-gradient-to-b from-navy-900 to-navy-800 text-white py-24 lg:py-32 overflow-hidden">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div class="max-w-3xl">
+                            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-600/20 text-teal-400 border border-teal-500/30 text-xs font-semibold tracking-wider uppercase mb-6">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Healthcare Consulting & Hospital Management
+                            </span>
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6">Building Stronger Healthcare Businesses.</h1>
+                            <p class="text-lg sm:text-xl text-gray-300 mb-10 leading-relaxed">Strategic consulting, operational excellence, accreditation support and digital growth solutions for hospitals, clinics and healthcare professionals.</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <a href="/services" onclick="route(event)" class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-8 py-4 rounded-xl shadow-lg transition-all text-center flex items-center justify-center gap-2">Explore Our Services <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                                <a href="/contact" onclick="route(event)" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-medium px-8 py-4 rounded-xl transition-all text-center flex items-center justify-center">Contact Our Team</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="py-20 bg-gray-50 border-t border-gray-100">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex justify-between items-end mb-12">
+                            <div><span class="text-xs font-bold text-teal-600 uppercase tracking-widest block mb-2">Insights & Updates</span><h2 class="text-3xl font-bold text-navy-900 tracking-tight">Latest from Our Experts</h2></div>
+                            <a href="/blogs" onclick="route(event)" class="text-teal-600 font-semibold text-sm hover:underline">View All &rarr;</a>
+                        </div>
+                        <div id="home-blogs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="bg-white p-6 rounded-2xl animate-pulse h-48 border border-gray-100"></div>
+                            <div class="bg-white p-6 rounded-2xl animate-pulse h-48 border border-gray-100"></div>
+                            <div class="bg-white p-6 rounded-2xl animate-pulse h-48 border border-gray-100"></div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        async function loadHomeData() {
+            try {
+                const { data } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false }).limit(3);
+                const blogs = (data && data.length > 0) ? data : [{ title: 'NABH Accreditation Readiness', slug: 'nabh-accreditation-readiness', excerpt: 'Essential steps for multi-specialty hospitals.', category: 'Accreditation' }];
+                document.getElementById('home-blogs-grid').innerHTML = blogs.map(b => `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-semibold text-teal-600 uppercase block mb-2">${b.category || 'Strategy'}</span>
+                            <h3 class="text-xl font-bold text-navy-900 mb-3">${b.title}</h3>
+                            <p class="text-gray-600 text-sm mb-4">${b.excerpt || ''}</p>
+                        </div>
+                        <a href="/blogs/${b.slug}" onclick="route(event)" class="text-teal-600 font-semibold text-sm hover:underline">Read article &rarr;</a>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        function renderAbout() { return `<div class="py-20 max-w-4xl mx-auto px-4"><h1 class="text-4xl font-bold text-navy-900 mb-6">About Us</h1><p class="text-gray-700 leading-relaxed text-lg">Medscope Growth is India's premier healthcare consulting, hospital management, and digital marketing agency dedicated to empowering doctors, clinics, and multi-specialty hospitals with sustainable growth strategies.</p></div>`; }
+        function renderServices() { return `<div class="py-20 max-w-5xl mx-auto px-4"><h1 class="text-4xl font-bold text-navy-900 mb-6">Our Services</h1><p class="text-gray-600 mb-10">Comprehensive expertise across growth strategy, hospital operations, accreditation, and digital marketing.</p><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm"><h3 class="text-xl font-bold text-navy-900 mb-2">Growth & Strategy</h3><p class="text-gray-600 text-sm mb-4">Business planning, market research, and strategic positioning.</p><a href="/contact" onclick="route(event)" class="text-teal-600 font-semibold text-sm hover:underline">Discuss Requirements &rarr;</a></div><div class="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm"><h3 class="text-xl font-bold text-navy-900 mb-2">Operations & Management</h3><p class="text-gray-600 text-sm mb-4">Hospital setup advisory, SOPs, and workflow optimization.</p><a href="/contact" onclick="route(event)" class="text-teal-600 font-semibold text-sm hover:underline">Discuss Requirements &rarr;</a></div></div></div>`; }
+        function renderBlogsPage() { return `<div class="py-20 max-w-7xl mx-auto px-4"><h1 class="text-4xl font-bold text-navy-900 mb-8">Blogs & Insights</h1><div id="blogs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div></div>`; }
+        async function loadBlogsData() {
+            const { data } = await supabase.from('blogs').select('*').eq('status', 'published');
+            const blogs = (data && data.length > 0) ? data : [{ title: 'NABH Accreditation Readiness', slug: 'nabh-accreditation-readiness', excerpt: 'Essential steps for multi-specialty hospitals.' }];
+            document.getElementById('blogs-grid').innerHTML = blogs.map(b => `<div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><h3 class="font-bold text-xl text-navy-900 mb-2">${b.title}</h3><p class="text-gray-600 text-sm mb-4">${b.excerpt || ''}</p><a href="/blogs/${b.slug}" onclick="route(event)" class="text-teal-600 font-semibold text-sm hover:underline">Read &rarr;</a></div>`).join('');
+        }
+        function renderSingleBlog(slug) { return `<div class="py-20 max-w-3xl mx-auto px-4"><h1 class="text-3xl font-bold text-navy-900 mb-4">Article: ${slug}</h1><p class="text-gray-600">Full article content loaded from database.</p></div>`; }
+        function renderNewsPage() { return `<div class="py-20 max-w-7xl mx-auto px-4"><h1 class="text-4xl font-bold text-navy-900 mb-8">News & Updates</h1><div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div></div>`; }
+        async function loadNewsData() {
+            const { data } = await supabase.from('news').select('*').eq('status', 'published');
+            const news = (data && data.length > 0) ? data : [{ title: 'Medscope Growth Expands Practice', slug: 'medscope-expansion', description: 'Announcing new advisory engagements.' }];
+            document.getElementById('news-grid').innerHTML = news.map(n => `<div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><h3 class="font-bold text-xl text-navy-900 mb-2">${n.title}</h3><p class="text-gray-600 text-sm">${n.description || ''}</p></div>`).join('');
+        }
+        function renderSingleNews(slug) { return `<div class="py-20 max-w-3xl mx-auto px-4"><h1 class="text-3xl font-bold text-navy-900 mb-4">News: ${slug}</h1></div>`; }
+        function renderContact() {
+            return `
+                <div class="py-20 max-w-3xl mx-auto px-4">
+                    <h1 class="text-4xl font-bold text-navy-900 mb-4">Contact Our Team</h1>
+                    <p class="text-gray-600 mb-8">Fill out the form below or connect with us directly via WhatsApp.</p>
+                    <form onsubmit="handleContactSubmit(event)" class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" id="contact-name" required class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-600">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                <input type="email" id="contact-email" required class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-600">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel" id="contact-phone" required class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-600">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                            <textarea id="contact-message" rows="4" required class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-600"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3.5 rounded-xl shadow transition-colors flex items-center justify-center gap-2">
+                            Send Inquiry & Connect on WhatsApp <i data-lucide="message-square" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+            `;
+        }
+
+        async function handleContactSubmit(event) {
+            event.preventDefault();
+            const full_name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const phone = document.getElementById('contact-phone').value;
+            const message = document.getElementById('contact-message').value;
+
+            try {
+                await supabase.from('contacts').insert([{ full_name, email, phone, message }]);
+                showNotification('Inquiry submitted successfully!', 'success');
+                const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(`Hello Medscope Growth, my name is ${full_name}. ${message}`)}`;
+                window.open(whatsappUrl, '_blank');
+            } catch (err) {
+                showNotification('Error submitting inquiry. Please try again.', 'error');
+            }
+        }
+
+        function renderPrivacy() { return `<div class="py-20 max-w-3xl mx-auto px-4"><h1 class="text-4xl font-bold text-navy-900 mb-6">Privacy Policy</h1><p class="text-gray-600">Medscope Growth values your privacy...</p></div>`; }
+        function renderTerms() { return `<div class="py-20 max-w-3xl mx-auto px-4"><h1 class="text-4xl font-bold text-navy-900 mb-6">Terms & Conditions</h1><p class="text-gray-600">By using our website, you agree to our terms...</p></div>`; }
+        function renderNotFound() { return `<div class="py-32 text-center"><h1 class="text-6xl font-bold text-navy-900 mb-4">404</h1><p class="text-gray-600">Page Not Found</p></div>`; }
+
+        // --- Admin Portal Login matching screenshot ---
+        function renderAdminLogin() {
+            return `
+                <div class="py-24 bg-gray-50 flex items-center justify-center min-h-[75vh]">
+                    <div class="max-w-md w-full mx-auto px-4">
+                        <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-lg border border-gray-100">
+                            <div class="text-center mb-8">
+                                <div class="w-12 h-12 rounded-2xl bg-navy-900 text-teal-400 flex items-center justify-center mx-auto mb-4 font-bold text-xl shadow">
+                                    <i data-lucide="lock" class="w-6 h-6"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-navy-900">Admin Portal Login</h2>
+                                <p class="text-gray-500 text-sm mt-1">Secure access for Medscope Growth administrators</p>
+                            </div>
+                            <div id="admin-login-error" class="hidden mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
+                            <form onsubmit="handleAdminLogin(event)" class="space-y-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">USERNAME / EMAIL</label>
+                                    <input type="email" id="admin-email" required placeholder="admin@medscopegrowth.com" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">PASSWORD</label>
+                                    <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-600">
+                                </div>
+                                <button type="submit" class="w-full bg-navy-900 hover:bg-navy-800 text-white font-medium py-3.5 rounded-xl shadow transition-colors flex items-center justify-center gap-2">
+                                    Secure Login <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+                                <a href="/" onclick="route(event)" class="text-sm text-gray-500 hover:text-teal-600">&larr; Back to public website</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const errorEl = document.getElementById('admin-login-error');
+            errorEl.textContent = '';
+            errorEl.classList.add('hidden');
+
+            try {
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+                if (authError) throw new Error(authError.message);
+
+                const { data: adminData, error: adminError } = await supabase
+                    .from('admin_users')
+                    .select('*')
+                    .eq('user_id', authData.user.id)
+                    .single();
+
+                if (adminError || !adminData) {
+                    await supabase.auth.signOut();
+                    throw new Error('Access Denied: This account is not authorized in public.admin_users.');
+                }
+
+                window.isAdminAuthenticated = true;
+                currentUser = authData.user;
+                showNotification('Admin login successful!', 'success');
+                window.history.pushState({}, '', '/admin/dashboard');
+                handleRoute();
+            } catch (err) {
+                errorEl.textContent = err.message || 'Authentication failed.';
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        async function handleAdminLogout() {
+            await supabase.auth.signOut();
+            window.isAdminAuthenticated = false;
+            currentUser = null;
+            showNotification('Logged out successfully', 'success');
+            window.history.pushState({}, '', '/admin/login');
+            handleRoute();
+        }
+
+        function renderAdminDashboard() {
+            return `
+                <div class="bg-gray-50 min-h-screen py-10">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <div><span class="text-xs font-bold text-teal-600 uppercase tracking-widest block mb-1">Authenticated Administrator</span><h1 class="text-2xl font-bold text-navy-900">Control Center</h1></div>
+                            <button onclick="handleAdminLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-4 py-2 rounded-xl text-sm flex items-center gap-2"><i data-lucide="log-out" class="w-4 h-4"></i> Logout</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Total Inquiries</h3><p id="stat-contacts" class="text-3xl font-bold text-navy-900 mt-2">0</p></div>
+                            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Subscribers</h3><p id="stat-subscribers" class="text-3xl font-bold text-navy-900 mt-2">0</p></div>
+                            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Published Articles</h3><p id="stat-blogs" class="text-3xl font-bold text-navy-900 mt-2">0</p></div>
+                        </div>
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <h2 class="text-xl font-bold text-navy-900 mb-4">Content & Database Management</h2>
+                            <p class="text-gray-600 text-sm">Use your Supabase backend to manage blogs, news, and subscriber lists securely.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadAdminDashboard() {
+            try {
+                const { count: cCount } = await supabase.from('contacts').select('*', { count: 'exact', head: true });
+                const { count: sCount } = await supabase.from('subscribers').select('*', { count: 'exact', head: true });
+                const { count: bCount } = await supabase.from('blogs').select('*', { count: 'exact', head: true });
+                if(document.getElementById('stat-contacts')) document.getElementById('stat-contacts').textContent = cCount || 0;
+                if(document.getElementById('stat-subscribers')) document.getElementById('stat-subscribers').textContent = sCount || 0;
+                if(document.getElementById('stat-blogs')) document.getElementById('stat-blogs').textContent = bCount || 0;
+            } catch (err) { console.error(err); }
+        }
+
+        async function handleFooterNewsletter(event) {
+            event.preventDefault();
+            const email = document.getElementById('footer-newsletter-email').value;
+            try {
+                const { error } = await supabase.from('subscribers').insert([{ email }]);
+                if (error) throw error;
+                showNotification('Successfully subscribed to Medscope Growth newsletter!', 'success');
+                document.getElementById('footer-newsletter-email').value = '';
+            } catch (err) {
+                showNotification('Subscription failed or email already registered.', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
